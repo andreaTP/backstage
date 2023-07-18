@@ -16,11 +16,16 @@ jobs:
         with:
           node-version: "16"
           cache: yarn
-          cache-dependency-path: yarn.lock     
+          cache-dependency-path: yarn.lock
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - name: Install Python dependencies
+        run: source .env/bin/activate && pip install -r requirements.txt
       - name: Login
         run: docker login -u "${{ secrets.QUAY_USERNAME }}" -p "${{ secrets.QUAY_PASSWORD }}" quay.io
       - name: Prepare
-        run: yarn && yarn tsc && yarn build
+        run: source .env/bin/activate && yarn && yarn tsc && yarn build
       - name: Build Image
         run: docker build . -t quay.io/apicurio/backstage:latest
       - name: Push To quay.io
